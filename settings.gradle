@@ -1,0 +1,3 @@
+rootProject.name = 'bombatch'
+include 'bombatch-simple-batch'
+
