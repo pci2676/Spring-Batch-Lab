@@ -1,0 +1,28 @@
+spring:
+  profiles:
+    active: local
+---
+spring:
+  profiles: local
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+---
+spring:
+  profiles: maria
+  datasource:
+    hikari:
+      driver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: jdbc:mariadb://localhost:13306/simple-batch
+      username: root
+      password: root
+    jpa:
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+          format_sql: true
+      show-sql: true
+      generate-ddl: true
