@@ -14,3 +14,4 @@ services:
       - ./mariadb/data:/var/lib/mysql
       - ./mariadb/log:/var/log/maria
       - ./mariadb/conf:/etc/mysql/conf.d
+      - ./mariadb/init/:/docker-entrypoint-initdb.d/
