@@ -1,3 +1,5 @@
+# 동욱님의 배치 글을 보고 정리를 정리해서 내것으로 만들기 위한 프로젝트
+
 ## 메타데이터 테이블
 
 ### BATCH_JOB_INSTACNE
@@ -34,3 +36,26 @@ spring:
 
 - `BatchStatus` 는 Job, Step 의 실행결과를 Spring 에 기록할 때 사용하는 Enum
 - `ExitStatus` 는 Step의 실행 후 상태 값
+
+## JobParameter, Scope
+
+Spring Batch 에서 외부, 내부에서 파라미터를 받아서 사용할 수 있는데 이러한 파라미터를 JobParameter 라 부른다.  
+JobParameter 를 사용하기 위한 조건은 Scope (JobScope, StepScope...)를 명시하는 것이다.  
+JobParameter는 다음과 같이 받아올 수 있다.  
+```java
+@Value("#{jobparameter[<파라미터 이름>]}")
+``` 
+JobScope 는 Job 에서 Step 으로 넘기는 파라미터에 적용한다.
+StepScope 는 Step 에서 Tasklet 혹은 Reader, Processor, Writer 로 넘기는 파라미터에 적용한다.  
+스코프에 따라 Bean 을 생성하기 때문에 JobParamter 의 Late binding 이 가능해진다.  
+그리고 Scope 에 따라 새롭게 Bean 을 생성하기 때문에 병렬 프로그래밍에서 안정성을 가져간다.   
+Scope 를 가진 Bean 을 만든 경우 구현체를 반환하지 않으면 프록시 객체가 반환되는데 프록시 객체는 필요한 인터페이스가 없어서 NullPointerException 이 발생할 수 있다.
+
+### 시스템 변수는 못 쓴다
+시스템 변수는 `application.properties`과 `-D` 로 주는 옵션을 의미한다.  
+- Spring Batch 는 시스템 변수로 JobParameter 관련 기능을 쓰지 못한다.
+    - 특히 Late Binding 을 못함  
+    - 일단 같은 JobParameter 로 두 번 실행하지 않음
+    - 심지어 Spring Batch 가 자동으로 관리하는 Parameter 관련 메타 테이블 관리가 안됌
+- Command Line 이 아닌 방법으로 Job 실행이 어렵다.
+    - 시스템 변수를 동적으로 변화시키기가 어렵다는 말이다.  
