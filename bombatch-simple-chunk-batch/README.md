@@ -27,5 +27,20 @@
 - Cursor Item Reader
     - Cursor 는 하나의 Connection 을 이용해서 Batch 작업을 모두 수행하기 때문에 Database Connection Timeout 시간을 어유롭게 설정해야 한다.
         - 따라서 Batch 로직이 오래걸린다면 Paging Item Reader 를 사용하자.
+        
+- PagingItemReader 
+    - 구현체를 구현할 때 쿼리에 Order 조건을 반드시 포함 하도록 하자
+    - 그렇지 않으면 페이징 하면서 자기 마음대로 그때 그때 정렬을 다르게 하기 때문에 쿼리하는 결과가 달라진다.
+    - Paging 은 PageSize 에 따라 적절하게 offset 과 limit 을 생성해준다.
+    - Paging 을 사용하면서 특정 조건을 바꿔가는 배치를 작업할 때 조건이 바뀌면서 페이징에 따라 건너뛰는 row 가 발생한다.
+        - 이때는 PagingReader 를 override 해서 getPage 를 0으로 고정해주면 된다.
+            - 데이터가 적으면 Cursor 를 쓰는 것도 한가지 방법이다.
+
+## Writer
+- JdbcWriter 를 사용할 경우 Insert Query 에 Value 를 바인딩 하는 방식은 다음과 같다.
+    - columnMapped : Map<String, Object> 로 쿼리 value 에 바인딩한다.
+        - 전달받은 객체가 Map 이어야 사용할 수 있다.
+    - beanMapped : 전달받은 Pojo 객체를 쿼리 value 에 바인딩한다.
+- InitializingBean 을 구현하기 때문에 afterPropertiesSet 메서드를 이용해서 필요한 매개변수의 검증을 하면 좋다.
 ## Processor
 - Processor 는 필수가 아니다.
