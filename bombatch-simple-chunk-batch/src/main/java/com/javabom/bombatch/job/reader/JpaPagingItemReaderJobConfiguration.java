@@ -1,14 +1,12 @@
-package com.javabom.bombatch.job;
+package com.javabom.bombatch.job.reader;
 
 import com.javabom.bombatch.domain.model.Pay;
-import com.javabom.bombatch.domain.model.Pay2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
@@ -20,49 +18,43 @@ import javax.persistence.EntityManagerFactory;
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
-public class CustomItemWriterJobConfiguration {
-    private static final int chunkSize = 10;
+public class JpaPagingItemReaderJobConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
 
+    private int chunkSize = 10;
+
     @Bean
-    public Job customItemWriterJob() {
-        return jobBuilderFactory.get("customItemWriterJob")
-                .start(customItemWriterStep())
+    public Job jpaPagingItemReaderJob() {
+        return jobBuilderFactory.get("jpaPagingItemReaderJob")
+                .start(jpaPagingItemReaderStep())
                 .build();
     }
 
     @Bean
-    public Step customItemWriterStep() {
-        return stepBuilderFactory.get("customItemWriterStep")
-                .<Pay, Pay2>chunk(chunkSize)
-                .reader(customItemWriterReader())
-                .processor(customItemWriterProcessor())
-                .writer(customItemWriter())
+    public Step jpaPagingItemReaderStep() {
+        return stepBuilderFactory.get("jpaPagingItemReaderStep")
+                .<Pay, Pay>chunk(chunkSize)
+                .reader(jpaPagingItemReader())
+                .writer(jpaPagingItemWriter())
                 .build();
     }
 
     @Bean
-    public JpaPagingItemReader<Pay> customItemWriterReader() {
+    public JpaPagingItemReader<Pay> jpaPagingItemReader() {
         return new JpaPagingItemReaderBuilder<Pay>()
-                .name("customItemWriterReader")
+                .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(chunkSize)
-                .queryString("SELECT p FROM Pay p")
+                .queryString("SELECT p FROM Pay p WHERE amount >= 2000")
                 .build();
     }
 
-    @Bean
-    public ItemProcessor<Pay, Pay2> customItemWriterProcessor() {
-        return pay -> new Pay2(pay.getAmount(), pay.getTxName(), pay.getTxDateTime().toString());
-    }
-
-    @Bean
-    public ItemWriter<Pay2> customItemWriter() {
-        return items -> {
-            for (Pay2 item : items) {
-                System.out.println(item);
+    private ItemWriter<Pay> jpaPagingItemWriter() {
+        return list -> {
+            for (Pay pay : list) {
+                log.info("Current Pay={}", pay);
             }
         };
     }

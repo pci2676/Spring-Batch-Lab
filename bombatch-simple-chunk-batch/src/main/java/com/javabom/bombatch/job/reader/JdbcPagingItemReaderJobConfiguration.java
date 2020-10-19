@@ -1,4 +1,4 @@
-package com.javabom.bombatch.job;
+package com.javabom.bombatch.job.reader;
 
 import com.javabom.bombatch.domain.model.Pay;
 import lombok.RequiredArgsConstructor;
