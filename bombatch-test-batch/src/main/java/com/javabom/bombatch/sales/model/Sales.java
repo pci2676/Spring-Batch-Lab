@@ -1,5 +1,6 @@
 package com.javabom.bombatch.sales.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
@@ -19,13 +21,22 @@ public class Sales {
     private Long id;
 
     @Column
-    private long txAmount;
+    private long amount;
 
     @Column
     private Long ownerNo;
 
-    public Sales(long txAmount, Long ownerNo) {
-        this.txAmount = txAmount;
+    @Column
+    private Long orderNo;
+
+    @Column
+    private LocalDate orderDate;
+
+    @Builder
+    public Sales(long amount, Long ownerNo, LocalDate orderDate, Long orderNo) {
+        this.amount = amount;
         this.ownerNo = ownerNo;
+        this.orderDate = orderDate;
+        this.orderNo = orderNo;
     }
 }

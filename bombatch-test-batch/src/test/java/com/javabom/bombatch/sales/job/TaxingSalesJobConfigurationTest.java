@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,9 +43,9 @@ class TaxingSalesJobConfigurationTest {
     void test1() throws Exception {
         //given
         salesRepository.saveAll(Arrays.asList(
-                new Sales(10000L, 1L),
-                new Sales(20000L, 2L),
-                new Sales(30000L, 3L)));
+                new Sales(10000L, 1L, LocalDate.of(2020, 12, 11), 1L),
+                new Sales(20000L, 2L, LocalDate.of(2020, 12, 11), 1L),
+                new Sales(30000L, 3L, LocalDate.of(2020, 12, 11), 1L)));
 
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
