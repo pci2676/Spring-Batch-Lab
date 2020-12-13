@@ -12,9 +12,9 @@ public class ItemListProcessor implements ItemProcessor<Sales, List<Tax>> {
     @Override
     public List<Tax> process(Sales item) {
         return Arrays.asList(
-                new Tax(item.getTxAmount(), item.getOwnerNo()),
-                new Tax((long) (item.getTxAmount() / 1.1), item.getOwnerNo()),
-                new Tax(item.getTxAmount() / 11, item.getOwnerNo())
+                new Tax(item.getAmount(), item.getOwnerNo()),
+                new Tax((long) (item.getAmount() / 1.1), item.getOwnerNo()),
+                new Tax(item.getAmount() / 11, item.getOwnerNo())
         );
     }
 }
