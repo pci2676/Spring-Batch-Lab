@@ -8,7 +8,6 @@ import com.javabom.bombatch.sales.model.SalesSumRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.StepExecution;
@@ -18,14 +17,12 @@ import org.springframework.batch.test.MetaDataInstanceFactory;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 
 import static com.javabom.bombatch.sales.job.BatchJdbcTestConfiguration.FORMATTER;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {BatchJpaTestConfiguration.class, TestBatchConfig.class})
 @SpringBatchTest
 public class BatchJpaUnitTestJobConfigurationTest {

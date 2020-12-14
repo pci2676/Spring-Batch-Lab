@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.StepExecution;
@@ -25,7 +24,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -34,7 +32,6 @@ import static com.javabom.bombatch.sales.job.BatchJdbcTestConfiguration.FORMATTE
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
-@ExtendWith(SpringExtension.class)
 @EnableBatchProcessing
 @SpringBatchTest
 @ContextConfiguration(classes = {
