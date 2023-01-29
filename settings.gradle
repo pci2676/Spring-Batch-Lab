@@ -1,5 +1,0 @@
-rootProject.name = 'bombatch'
-include 'bombatch-simple-batch'
-include 'bombatch-simple-chunk-batch'
-include 'bombatch-test-batch'
-
