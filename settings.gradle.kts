@@ -10,5 +10,6 @@ include(
     "bombatch-simple-chunk-batch",
     "bombatch-test-batch",
     "one-to-many-persist",
-    "bombatch-multi-processing-1"
+    "bombatch-multi-processing-1",
+    "bombatch-multi-processing-2"
 )

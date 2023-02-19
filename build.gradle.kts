@@ -77,7 +77,8 @@ configure(javaProjects) {
 
 val kotlinProjects = listOf(
 	project(":one-to-many-persist"),
-	project(":bombatch-multi-processing-1")
+	project(":bombatch-multi-processing-1"),
+	project(":bombatch-multi-processing-2")
 )
 configure(kotlinProjects) {
     apply {
