@@ -15,9 +15,14 @@ import org.springframework.batch.item.database.JpaItemWriter
 import org.springframework.batch.item.database.JpaPagingItemReader
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.task.TaskExecutor
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import java.time.LocalDate
 import javax.persistence.EntityManagerFactory
+
 
 @Configuration
 class BalanceSnapshotRefreshBatchConfiguration(
@@ -39,8 +44,10 @@ class BalanceSnapshotRefreshBatchConfiguration(
     fun step(): Step = stepBuilderFactory[STEP_NAME]
         .chunk<MemberEntity, BalanceSnapShotEntity>(jobParameters.chunkSize.toInt())
         .reader(reader())
-        .processor(processor())
+        .processor(processor(null))
         .writer(writer())
+        .throttleLimit(jobParameters.chunkSize.toInt())
+        .taskExecutor(taskExecutor())
         .build()
 
 
@@ -59,9 +66,9 @@ class BalanceSnapshotRefreshBatchConfiguration(
 
     @StepScope
     @Bean(STEP_PROCESSOR)
-    fun processor(): ItemProcessor<MemberEntity, BalanceSnapShotEntity> {
+    fun processor(@Value("#{jobParameters['targetDate']}") targetDate: String?): ItemProcessor<MemberEntity, BalanceSnapShotEntity> {
         return ItemProcessor {
-            service.refresh(it.memberNumber, jobParameters.targetDate)
+            service.refresh(it.memberNumber, LocalDate.parse(targetDate))
         }
     }
 
@@ -73,11 +80,25 @@ class BalanceSnapshotRefreshBatchConfiguration(
             .build()
     }
 
+    @JobScope
+    @Bean(TASK_EXECUTOR_NAME)
+    fun taskExecutor(): TaskExecutor {
+        val executor = ThreadPoolTaskExecutor()
+        executor.corePoolSize = jobParameters.chunkSize.toInt()
+        executor.maxPoolSize = jobParameters.chunkSize.toInt()
+        executor.threadNamePrefix = "refresh-thread-"
+        executor.setWaitForTasksToCompleteOnShutdown(true)
+        executor.initialize()
+        return executor
+    }
+
     companion object {
         const val JOB_NAME = "BalanceSnapshotRefreshBatch"
         const val STEP_NAME = "${JOB_NAME}Step"
         const val STEP_READER = "${STEP_NAME}Reader"
         const val STEP_PROCESSOR = "${STEP_NAME}Processor"
         const val STEP_WRITER = "${STEP_NAME}Writer"
+        const val TASK_EXECUTOR_NAME = "${STEP_NAME}TaskExecutor"
+
     }
 }

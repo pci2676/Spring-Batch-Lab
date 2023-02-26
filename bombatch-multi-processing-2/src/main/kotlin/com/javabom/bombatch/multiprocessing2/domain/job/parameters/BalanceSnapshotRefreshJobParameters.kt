@@ -15,8 +15,8 @@ class BalanceSnapshotRefreshJobParameters {
     private lateinit var _targetDate: String
 
     val chunkSize: Long
-        get() = _chunkSize!!.toLong()
+        get() = _chunkSize.toLong()
 
     val targetDate: LocalDate
-        get() = LocalDate.parse(_targetDate!!)
+        get() = LocalDate.parse(_targetDate)
 }
