@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.batch.core.BatchStatus
 import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.JobParametersBuilder
+import java.io.File
+import java.io.FileWriter
 import java.time.LocalDate
 
 @BatchSpringTest
@@ -34,9 +36,20 @@ class BalanceSnapshotRefreshBatchConfigurationTest(
     @Test
     fun test_29() {
         //given
+        File("temp/").mkdirs()
+        val filePath = "temp/input.csv"
+        val file = File(filePath)
+        file.deleteOnExit()
+        FileWriter(file).use {
+            it.appendLine("Dewitt")
+            it.appendLine("Dewitt1")
+        }
+
         val member = memberRepository.save(MemberEntity(memberNumber = "Dewitt"))
+        val member1 = memberRepository.save(MemberEntity(memberNumber = "Dewitt1"))
 
         val jobParameters = JobParametersBuilder()
+            .addString("filePath", filePath)
             .addString("chunkSize", "100")
             .addString("targetDate", "2023-02-20")
             .toJobParameters()

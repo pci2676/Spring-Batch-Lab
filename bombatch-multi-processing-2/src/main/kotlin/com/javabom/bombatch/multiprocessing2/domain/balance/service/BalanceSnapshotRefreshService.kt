@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @Service
-@Transactional
+//@Transactional
 class BalanceSnapshotRefreshService(
     private val historyRepository: BalanceHistoryEntityRepository,
     private val snapShotRepository: BalanceSnapShotEntityRepository,

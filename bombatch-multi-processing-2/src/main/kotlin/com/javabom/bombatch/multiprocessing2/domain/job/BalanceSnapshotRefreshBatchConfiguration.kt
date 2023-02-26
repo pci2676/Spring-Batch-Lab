@@ -15,11 +15,15 @@ import org.springframework.batch.item.database.JpaItemWriter
 import org.springframework.batch.item.database.JpaPagingItemReader
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder
+import org.springframework.batch.item.file.FlatFileItemReader
+import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.FileSystemResource
 import org.springframework.core.task.TaskExecutor
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import java.io.File
 import java.time.LocalDate
 import javax.persistence.EntityManagerFactory
 
@@ -42,7 +46,7 @@ class BalanceSnapshotRefreshBatchConfiguration(
     @JobScope
     @Bean(STEP_NAME)
     fun step(): Step = stepBuilderFactory[STEP_NAME]
-        .chunk<MemberEntity, BalanceSnapShotEntity>(jobParameters.chunkSize.toInt())
+        .chunk<String, BalanceSnapShotEntity>(jobParameters.chunkSize.toInt())
         .reader(reader())
         .processor(processor(null))
         .writer(writer())
@@ -53,22 +57,20 @@ class BalanceSnapshotRefreshBatchConfiguration(
 
     @StepScope
     @Bean(STEP_READER)
-    fun reader(): JpaPagingItemReader<MemberEntity> {
-        return JpaPagingItemReaderBuilder<MemberEntity>()
+    fun reader(): FlatFileItemReader<String> {
+        return FlatFileItemReaderBuilder<String>()
             .name(STEP_READER)
-            .queryString("SELECT m FROM MemberEntity m ORDER BY id ASC")
-            .parameterValues(emptyMap())
-            .pageSize(jobParameters.chunkSize.toInt())
-            .entityManagerFactory(entityManagerFactory)
+            .lineMapper { line, _ -> line }
             .saveState(false)
+            .resource(FileSystemResource(File(jobParameters.filePath)))
             .build()
     }
 
     @StepScope
     @Bean(STEP_PROCESSOR)
-    fun processor(@Value("#{jobParameters['targetDate']}") targetDate: String?): ItemProcessor<MemberEntity, BalanceSnapShotEntity> {
+    fun processor(@Value("#{jobParameters['targetDate']}") targetDate: String?): ItemProcessor<String, BalanceSnapShotEntity> {
         return ItemProcessor {
-            service.refresh(it.memberNumber, LocalDate.parse(targetDate))
+            service.refresh(it, LocalDate.parse(targetDate))
         }
     }
 

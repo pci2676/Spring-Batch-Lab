@@ -8,12 +8,17 @@ import java.time.LocalDate
 @JobScope
 @Configuration
 class BalanceSnapshotRefreshJobParameters {
+    @Value("#{jobParameters['filePath']}")
+    private lateinit var _filePath: String
+
     @Value("#{jobParameters['chunkSize']}")
     private lateinit var _chunkSize: String
 
     @Value("#{jobParameters['targetDate']}")
     private lateinit var _targetDate: String
 
+    val filePath: String
+        get() = _filePath
     val chunkSize: Long
         get() = _chunkSize.toLong()
 
